@@ -1,9 +1,11 @@
 const std = @import("std");
+
 const advent = @import("advent");
+
 const d1 = @import("day-1.zig");
 
 pub fn main() !void {
-    std.debug.print("Advent 2025 in Zig!\n", .{} );
+    std.debug.print("Advent 2025 in Zig!\n", .{});
 
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
