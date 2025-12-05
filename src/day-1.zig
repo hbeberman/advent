@@ -15,17 +15,12 @@ const AdventError = error{
     InvalidTestInput,
 };
 
-pub fn solve(allocator: std.mem.Allocator, path: [:0]const u8) !void {
-    std.debug.print("Day 1: Secret Entrance!\n", .{});
-
+pub fn solve(allocator: std.mem.Allocator, path: [:0]const u8) !u16 {
     var test_path: ArrayList(u8) = .empty;
     defer test_path.deinit(allocator);
 
     // prepend cwd if path is relative
-    if (std.fs.path.isAbsolute(path)) {
-        std.debug.print("Path {s} is absolute\n", .{path});
-    } else {
-        std.debug.print("Path {s} is not absolute\n", .{path});
+    if (!std.fs.path.isAbsolute(path)) {
         var buf: [std.fs.max_path_bytes]u8 = undefined;
         const cwd_path = try std.process.getCwd(&buf);
         try test_path.appendSlice(allocator, cwd_path);
@@ -34,32 +29,43 @@ pub fn solve(allocator: std.mem.Allocator, path: [:0]const u8) !void {
     // prepare the rest of path
     try test_path.appendSlice(allocator, path);
     try test_path.appendSlice(allocator, "day-1.txt");
-    std.debug.print("test_path {s}\n", .{test_path.items});
 
     const file = try std.fs.openFileAbsolute(test_path.items, .{});
     defer file.close();
-    std.debug.print("file {}\n", .{file});
 
     const contents = try file.readToEndAlloc(allocator, 100_000);
     defer allocator.free(contents);
-    std.debug.print("{s}", .{contents});
-    _ = try decode(contents);
+    const result = try decode(contents);
+    return result;
 }
 
 fn decode(steps: []const u8) !u16 {
     var iterator = std.mem.splitSequence(u8, steps, "\n");
 
     var step: Step = undefined;
+    var pos: u16 = 50;
+    var password: u16 = 0;
 
     while (iterator.next()) |line| {
         step = try validate_line(line) orelse continue;
-        std.debug.print("step {}\n", .{step});
+
+        const clicks = step.clicks % 100;
+        switch (step.dir) {
+            Direction.left => {
+                pos = @mod(pos + 100 - clicks, 100);
+            },
+            Direction.right => {
+                pos = @mod(pos + clicks, 100);
+            },
+        }
+        if (pos == 0) {
+            password += 1;
+        }
     }
-    return 0;
+    return password;
 }
 
 fn validate_line(line: []const u8) !?Step {
-    std.debug.print("line {s}\n", .{line});
     switch (line.len) {
         0 => {
             return null;

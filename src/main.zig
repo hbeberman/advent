@@ -24,5 +24,6 @@ pub fn main() !void {
         return error.MissingPath;
     };
 
-    try d1.solve(allocator, path);
+    const d1_result = try d1.solve(allocator, path);
+    std.debug.print("Day 1 Result: {}\n", .{d1_result});
 }
