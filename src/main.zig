@@ -3,6 +3,7 @@ const std = @import("std");
 const advent = @import("advent");
 
 const d1 = @import("day-1.zig");
+const d2 = @import("day-2.zig");
 
 pub fn main() !void {
     std.debug.print("Advent 2025 in Zig!\n", .{});
@@ -28,6 +29,9 @@ pub fn main() !void {
 
     const d1_result = try d1.solve(allocator, path);
     std.debug.print("Day 1 Result: {}\n", .{d1_result});
+
+    const d2_result = try d2.solve(allocator, path);
+    std.debug.print("Day 2 Result: {}\n", .{d2_result});
 }
 
 fn usage() void {
