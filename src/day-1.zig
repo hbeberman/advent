@@ -1,5 +1,5 @@
 const std = @import("std");
-const ArrayList = std.ArrayList;
+const common = @import("common.zig");
 
 const Direction = enum {
     left,
@@ -16,24 +16,7 @@ const AdventError = error{
 };
 
 pub fn solve(allocator: std.mem.Allocator, path: [:0]const u8) !u16 {
-    var test_path: ArrayList(u8) = .empty;
-    defer test_path.deinit(allocator);
-
-    // prepend cwd if path is relative
-    if (!std.fs.path.isAbsolute(path)) {
-        var buf: [std.fs.max_path_bytes]u8 = undefined;
-        const cwd_path = try std.process.getCwd(&buf);
-        try test_path.appendSlice(allocator, cwd_path);
-        try test_path.append(allocator, '/');
-    }
-    // prepare the rest of path
-    try test_path.appendSlice(allocator, path);
-    try test_path.appendSlice(allocator, "day-1.txt");
-
-    const file = try std.fs.openFileAbsolute(test_path.items, .{});
-    defer file.close();
-
-    const contents = try file.readToEndAlloc(allocator, 100_000);
+    const contents = try common.load_input(allocator, path, "day-1.txt");
     defer allocator.free(contents);
     const result = try decode(contents);
     return result;

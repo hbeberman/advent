@@ -16,14 +16,20 @@ pub fn main() !void {
     var argiter = try std.process.ArgIterator.initWithAllocator(allocator);
     defer argiter.deinit();
 
+    if (std.os.argv.len != 2) {
+        usage();
+        std.posix.exit(1);
+    }
+
     // Discard the program name, at least one arg exists
     _ = argiter.next();
 
-    const path = argiter.next() orelse {
-        std.debug.print("Error: No test file path provided\n", .{});
-        return error.MissingPath;
-    };
+    const path = argiter.next() orelse unreachable;
 
     const d1_result = try d1.solve(allocator, path);
     std.debug.print("Day 1 Result: {}\n", .{d1_result});
+}
+
+fn usage() void {
+    std.debug.print("Usage: ./advent <path-to-data>\n", .{});
 }
