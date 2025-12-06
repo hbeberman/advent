@@ -49,18 +49,27 @@ fn decode(steps: []const u8) !u16 {
     while (iterator.next()) |line| {
         step = try validate_line(line) orelse continue;
 
+        password += step.clicks / 100;
+
         const clicks = step.clicks % 100;
         switch (step.dir) {
             Direction.left => {
+                if (pos < clicks and pos != 0) {
+                    password += 1;
+                }
                 pos = @mod(pos + 100 - clicks, 100);
             },
             Direction.right => {
+                if (pos + clicks > 100 and pos != 0) {
+                    password += 1;
+                }
                 pos = @mod(pos + clicks, 100);
             },
         }
         if (pos == 0) {
             password += 1;
         }
+        //std.debug.print("step: {} pos:{} pass:{}\n", .{ step, pos, password });
     }
     return password;
 }
