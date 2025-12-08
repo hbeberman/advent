@@ -26,8 +26,7 @@ fn decode(ranges: []const u8) !u64 {
 }
 
 fn validate_range(range: []const u8) !?u64 {
-    //std.debug.print("range: {s} len={d}\n", .{ range, range.len });
-
+    //std.debug.print("checking range {s}\n", .{range});
     var iter = std.mem.splitSequence(u8, range, "-");
     const start: u64 = try std.fmt.parseInt(u64, (iter.next() orelse return AdventError.InvalidInput), 10);
     const end: u64 = try std.fmt.parseInt(u64, (iter.next() orelse return AdventError.InvalidInput), 10);
@@ -36,7 +35,7 @@ fn validate_range(range: []const u8) !?u64 {
     var total: u64 = 0;
     for (start..end + 1) |val| {
         const val_u64: u64 = @intCast(val);
-        if (try check_double(val_u64)) {
+        if (try check_value(val_u64)) {
             total += val_u64;
         }
     }
@@ -44,20 +43,34 @@ fn validate_range(range: []const u8) !?u64 {
     return total;
 }
 
-fn check_double(val: u64) !bool {
+fn check_value(val: u64) !bool {
     //std.debug.print("val:{}\n", .{val});
     const T = @TypeOf(val);
     const MAXLEN = std.fmt.comptimePrint("{d}", .{std.math.maxInt(T)}).len;
     var buf: [MAXLEN + 1]u8 = undefined;
     const num = try std.fmt.bufPrintZ(&buf, "{}", .{val});
-    if (num.len % 2 == 0x1) return false;
     const half = num.len / 2;
-
-    const first = num[0..half];
-    const second = num[half..num.len];
-    const equal = std.mem.eql(u8, first, second);
-    if (equal) {
-        //std.debug.print("num:{s} len:{d} f:{s} s:{s} equal:{}\n", .{ num, num.len, first, second, equal });
+    for (1..half + 1) |chunk_size| {
+        if (check_chunks(num, chunk_size)) {
+            //std.debug.print("val:{} chunk:{} valid\n", .{ val, chunk_size });
+            return true;
+        }
     }
-    return equal;
+    return false;
+}
+
+fn check_chunks(num: [:0]u8, chunk_size: usize) bool {
+    if (num.len % chunk_size != 0) {
+        return false;
+    }
+
+    var iter = std.mem.window(u8, num, chunk_size, chunk_size);
+    const match = iter.next() orelse unreachable;
+    //std.debug.print("chunk_size:{} match:{s}\n", .{ chunk_size, match });
+    while (iter.next()) |chunk| {
+        if (!std.mem.eql(u8, match, chunk)) {
+            return false;
+        }
+    }
+    return true;
 }
