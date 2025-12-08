@@ -27,10 +27,16 @@ pub fn main() !void {
 
     const path = argiter.next() orelse unreachable;
 
-    const d1_result = try d1.solve(allocator, path);
+    const d1_result = d1.solve(allocator, path) catch |err| {
+        std.debug.print("Error: {}\n", .{err});
+        std.posix.exit(1);
+    };
     std.debug.print("Day 1 Result: {}\n", .{d1_result});
 
-    const d2_result = try d2.solve(allocator, path);
+    const d2_result = d2.solve(allocator, path) catch |err| {
+        std.debug.print("Error: {}\n", .{err});
+        std.posix.exit(1);
+    };
     std.debug.print("Day 2 Result: {}\n", .{d2_result});
 }
 

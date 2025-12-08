@@ -1,6 +1,10 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 
+pub const AdventError = error{
+    InvalidInput,
+};
+
 pub fn load_input(allocator: std.mem.Allocator, path: [:0]const u8, filename: []const u8) ![]u8 {
     var test_path: ArrayList(u8) = .empty;
     defer test_path.deinit(allocator);
