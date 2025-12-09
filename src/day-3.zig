@@ -17,43 +17,42 @@ fn decode(banks: []const u8) !u64 {
     var total: u64 = 0;
 
     while (iter.next()) |bank| {
-        total += try joltage_bank(bank);
+        total += try joltage_bank(bank, 12);
     }
     return total;
 }
 
-fn joltage_bank(bank: []const u8) !u8 {
-    //std.debug.print("bank: {s}\n", .{bank});
+fn joltage_bank(bank: []const u8, digits: u8) !u64 {
+    //std.debug.print("bank: {s} digits: {}\n", .{ bank, digits });
 
-    var first: u8 = 0;
-    var second: u8 = 0;
-    var prev_first: u8 = 0;
+    var max: [64]u8 = .{0} ** 64;
 
-    for (0..bank.len) |char| {
-        const val = bank[char];
-        //std.debug.print("{d}-", .{val});
-        if (val > first) {
-            prev_first = first;
-            first = val;
-            second = 0;
-            continue;
-        }
-        if (val > second) {
-            second = val;
-            if (second == '9') {
-                break;
-            }
-        }
+    for (0..bank.len) |bank_pos| {
+        try decide_switch(&max, bank, bank_pos, digits);
     }
-    if (second == 0) {
-        second = first;
-        first = prev_first;
-    }
-    //std.debug.print("\nf:{c} s:{c}\n", .{ first, second });
 
-    var buf: [2]u8 = undefined;
-    const num = try std.fmt.bufPrint(&buf, "{c}{c}", .{ first, second });
-    const joltage = try std.fmt.parseInt(u8, num, 10);
+    var buf: [64]u8 = undefined;
+    const num = try std.fmt.bufPrint(&buf, "{s}", .{max});
+    //std.debug.print("num:{s}\n", .{num});
+    const joltage = try std.fmt.parseInt(u64, num[0..digits], 10);
 
     return joltage;
+}
+
+fn decide_switch(max: []u8, bank: []const u8, bank_pos: usize, digits: u8) !void {
+    //std.debug.print("switch:{c}\n", .{bank[bank_pos]});
+    for (0..digits) |max_pos| {
+        //std.debug.print("{d}:{x}\n", .{ max_pos, max[max_pos] });
+        if ((bank.len - bank_pos) < digits - max_pos) {
+            //std.debug.print("SKIP {d}\n", .{max_pos});
+            continue;
+        }
+        const bank_val = bank[bank_pos];
+        if (bank_val > max[max_pos]) {
+            max[max_pos] = bank_val;
+            @memset(max[max_pos + 1 ..], 0);
+            //std.debug.print("GRAB {d}:{c}\n", .{ max_pos, max[max_pos] });
+            return;
+        }
+    }
 }
