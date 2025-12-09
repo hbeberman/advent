@@ -5,6 +5,7 @@ const advent = @import("advent");
 const d1 = @import("day-1.zig");
 const d2 = @import("day-2.zig");
 const d3 = @import("day-3.zig");
+const d4 = @import("day-4.zig");
 
 pub fn main() !void {
     std.debug.print("Advent 2025 in Zig!\n", .{});
@@ -28,23 +29,29 @@ pub fn main() !void {
 
     const path = argiter.next() orelse unreachable;
 
-    const d1_result = d1.solve(allocator, path) catch |err| {
-        std.debug.print("Error: {}\n", .{err});
-        std.posix.exit(1);
-    };
-    std.debug.print("Day 1 Result: {}\n", .{d1_result});
+    //    const d1_result = d1.solve(allocator, path) catch |err| {
+    //        std.debug.print("Error: {}\n", .{err});
+    //        std.posix.exit(1);
+    //    };
+    //    std.debug.print("Day 1 Result: {}\n", .{d1_result});
 
-    const d2_result = d2.solve(allocator, path) catch |err| {
-        std.debug.print("Error: {}\n", .{err});
-        std.posix.exit(1);
-    };
-    std.debug.print("Day 2 Result: {}\n", .{d2_result});
+    //    const d2_result = d2.solve(allocator, path) catch |err| {
+    //        std.debug.print("Error: {}\n", .{err});
+    //        std.posix.exit(1);
+    //    };
+    //    std.debug.print("Day 2 Result: {}\n", .{d2_result});
 
-    const d3_result = d3.solve(allocator, path) catch |err| {
+    // const d3_result = d3.solve(allocator, path) catch |err| {
+    //     std.debug.print("Error: {}\n", .{err});
+    //     std.posix.exit(1);
+    // };
+    // std.debug.print("Day 3 Result: {}\n", .{d3_result});
+
+    const d4_result = d4.solve(allocator, path) catch |err| {
         std.debug.print("Error: {}\n", .{err});
         std.posix.exit(1);
     };
-    std.debug.print("Day 3 Result: {}\n", .{d3_result});
+    std.debug.print("Day 4 Result: {}\n", .{d4_result});
 }
 
 fn usage() void {
