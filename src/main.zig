@@ -29,23 +29,23 @@ pub fn main() !void {
 
     const path = argiter.next() orelse unreachable;
 
-    //    const d1_result = d1.solve(allocator, path) catch |err| {
-    //        std.debug.print("Error: {}\n", .{err});
-    //        std.posix.exit(1);
-    //    };
-    //    std.debug.print("Day 1 Result: {}\n", .{d1_result});
+    const d1_result = d1.solve(allocator, path) catch |err| {
+        std.debug.print("Error: {}\n", .{err});
+        std.posix.exit(1);
+    };
+    std.debug.print("Day 1 Result: {}\n", .{d1_result});
 
-    //    const d2_result = d2.solve(allocator, path) catch |err| {
-    //        std.debug.print("Error: {}\n", .{err});
-    //        std.posix.exit(1);
-    //    };
-    //    std.debug.print("Day 2 Result: {}\n", .{d2_result});
+    const d2_result = d2.solve(allocator, path) catch |err| {
+        std.debug.print("Error: {}\n", .{err});
+        std.posix.exit(1);
+    };
+    std.debug.print("Day 2 Result: {}\n", .{d2_result});
 
-    // const d3_result = d3.solve(allocator, path) catch |err| {
-    //     std.debug.print("Error: {}\n", .{err});
-    //     std.posix.exit(1);
-    // };
-    // std.debug.print("Day 3 Result: {}\n", .{d3_result});
+    const d3_result = d3.solve(allocator, path) catch |err| {
+        std.debug.print("Error: {}\n", .{err});
+        std.posix.exit(1);
+    };
+    std.debug.print("Day 3 Result: {}\n", .{d3_result});
 
     const d4_result = d4.solve(allocator, path) catch |err| {
         std.debug.print("Error: {}\n", .{err});
