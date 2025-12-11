@@ -6,6 +6,7 @@ const d1 = @import("day-1.zig");
 const d2 = @import("day-2.zig");
 const d3 = @import("day-3.zig");
 const d4 = @import("day-4.zig");
+const d5 = @import("day-5.zig");
 
 pub fn main() !void {
     std.debug.print("Advent 2025 in Zig!\n", .{});
@@ -52,6 +53,12 @@ pub fn main() !void {
         std.posix.exit(1);
     };
     std.debug.print("Day 4 Result: {}\n", .{d4_result});
+
+    const d5_result = d5.solve(allocator, path) catch |err| {
+        std.debug.print("Error: {}\n", .{err});
+        std.posix.exit(1);
+    };
+    std.debug.print("Day 5 Result: {}\n", .{d5_result});
 }
 
 fn usage() void {
