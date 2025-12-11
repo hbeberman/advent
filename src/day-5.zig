@@ -29,7 +29,9 @@ fn decode(allocator: std.mem.Allocator, lines: []const u8) !u64 {
     while (iter.next()) |line| {
         if (line.len == 0) {
             mode = Mode.SpoilCheck;
-            continue;
+            std.mem.sort(Range, ranges.items, {}, lessThan);
+            total = try all_fresh(&ranges);
+            break;
         }
         switch (mode) {
             Mode.RangeFind => {
@@ -41,6 +43,46 @@ fn decode(allocator: std.mem.Allocator, lines: []const u8) !u64 {
         }
     }
     return total;
+}
+
+fn lessThan(_: void, lhs: Range, rhs: Range) bool {
+    return lhs.min < rhs.min;
+}
+
+fn all_fresh(ranges: *std.ArrayList(Range)) !u64 {
+    //std.debug.print("id: {d}\n", .{id});
+    var prev = Range{ .min = 0, .max = 0 };
+    for (ranges.items, 0..) |*range, i| {
+        _ = i;
+        //std.debug.print("range {d}: {d}-{d}\n", .{ i, range.min, range.max });
+        // prev range overlaps current range?
+        if (range.min <= prev.max) {
+            // range subsumed entirely?
+            if (range.max <= prev.max) {
+                range.min = 0;
+                range.max = 0;
+                continue;
+            }
+            range.min = prev.max + 1;
+        }
+
+        prev = range.*;
+    }
+
+    var items_total: u64 = 0;
+    for (ranges.items, 0..) |range, i| {
+        _ = i;
+        var items: u64 = 0;
+        if (range.max == 0 and range.min == 0) {
+            continue;
+        }
+        items += (range.max - range.min + 1);
+        //std.debug.print("range {d}: {d}-{d} i:{}\n", .{ i, range.min, range.max, items });
+
+        items_total += items;
+    }
+
+    return items_total;
 }
 
 fn fresh_check(line: []const u8, ranges: *std.ArrayList(Range)) !u64 {
